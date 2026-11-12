@@ -24,8 +24,6 @@ function MakeCircle() {
     })
 }
 
-
-
 function CircleTest() {
     game.stats = true
     let count = 0

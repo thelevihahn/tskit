@@ -20,6 +20,12 @@ interface CoordinateConfig {
     axisX: Sign
     axisY: Sign
 }
+
+namespace Coordinates {
+    export function getOrientation(config: CoordinateConfig): Sign {
+        return (config.axisX * config.axisY) as Sign
+    }
+}
 namespace Object {
 
     /**
@@ -37,6 +43,10 @@ namespace Object {
         return <T><any>cloneRecursive(value, originals, clones)
     }
 
+    export function isObject(value: any): boolean {
+        return value !== undefined && value !== null && typeof value === "object"
+    }
+    
     function cloneRecursive(
         value: any,
         originals: any[],
@@ -98,10 +108,6 @@ namespace Identity {
 
     let entries: Dictionary<object | Primitive> = {}
 
-    function isObject(value: any): boolean {
-        return value !== undefined && value !== null && typeof value === "object"
-    }
-
     function isValid(key: Key | null | undefined): boolean {
         return key !== undefined && key !== null
     }
@@ -118,7 +124,7 @@ namespace Identity {
     }
 
     export function register(value: any): UID {
-        if (isObject(value)) {
+        if (Object.isObject(value)) {
             const obj = value as object & Entry
             const uid = obj[uidTag]
 
@@ -142,7 +148,7 @@ namespace Identity {
         }
 
         const value = entries[id]
-        if (isObject(value)) {
+        if (Object.isObject(value)) {
             const obj = value as object & Entry
             if (obj[uidTag] === id) {
                 obj[uidTag] = null
@@ -157,7 +163,7 @@ namespace Identity {
     }
 
     export function getValue(id: Identity): any {
-        if (isObject(id)) {
+        if (Object.isObject(id)) {
             const objectID = (id as Entry)[uidTag]
 
             if (!isValid(objectID)) return undefined

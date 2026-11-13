@@ -1,3 +1,6 @@
+// NOTE/FIX: A lot of this geometrical math only works on MCA's coordinate system
+
+
 interface Vector2 {
     x: number,
     y: number
@@ -5,9 +8,6 @@ interface Vector2 {
 
 
 namespace Vector2 {
-
-    export let crossSign: Sign = 1
-
     interface Readonly {
         readonly x: number
         readonly y: number
@@ -93,17 +93,19 @@ namespace Vector2 {
 
     export function cross(
         a: Vector2,
-        b: Vector2
+        b: Vector2,
+        orientation: Sign = 1
     ): number {
-        return crossRaw(a.x, a.y, b.x, b.y)
+        return crossRaw(a.x, a.y, b.x, b.y, orientation)
     }
     export function crossRaw(
         ax: number,
         ay: number,
         bx: number,
-        by: number
+        by: number,
+        orientation: Sign = 1
     ): number {
-        return crossSign * (ax * by - ay * bx)
+        return orientation * (ax * by - ay * bx)
     }
 
     export function dot(
@@ -342,20 +344,18 @@ namespace Segment {
     // Optimized
     export function getNormal(
         segment: Segment,
-        side: Side
+        side: Sign
     ): Vector2 {
-        const sign: Sign = side === Side.Left ? 1 : -1
-
         return {
-            x: segment.vector.y * sign / segment.length,
-            y: -segment.vector.x * sign / segment.length
+            x: segment.vector.y * side / segment.length,
+            y: -segment.vector.x * side / segment.length
         }
     }
 
     // Optimized: Could be it's own segment Math
     export function getNormals(
         segments: Segment[],
-        side: Side
+        side: Sign
     ): Vector2[] {
 
         const normals: Vector2[] = []
@@ -426,8 +426,8 @@ namespace Edge {
             normal: Segment.getNormal(
                 segment,
                 winding === Winding.Clockwise
-                    ? Segment.Side.Left
-                    : Segment.Side.Right
+                    ? -1
+                    : 1
             )
         }
     }

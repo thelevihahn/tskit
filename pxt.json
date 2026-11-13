@@ -11,12 +11,9 @@
         "README.md",
         "assets.json",
         "core.ts",
-        "advMath.ts",
-        "test.ts"
+        "advMath.ts"
     ],
-    "testFiles": [
-        "test.ts"
-    ],
+    "testFiles": [],
     "targetVersions": {
         "target": "4.1.27",
         "targetId": "arcade"

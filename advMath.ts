@@ -914,6 +914,15 @@ namespace AABB {
     export function toLog(bounds: AABB): string {
         return `min: ${Vector2.toLog(bounds.min)}, max: ${Vector2.toLog(bounds.max)}`
     }
+
+    export function isOverlapping(a: AABB, b: AABB): boolean {
+        return (
+            a.min.x <= b.max.x &&
+            a.max.x >= b.min.x &&
+            a.min.y <= b.max.y &&
+            a.max.y >= b.min.y
+        )
+    }
 }
 interface Circle {
     center: Vector2

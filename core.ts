@@ -1,6 +1,11 @@
 
 // TYPES
 type Key = number | string
+namespace Key {
+    export function isKey(value: any): boolean {
+        return typeof value === "number" || typeof value === "string"
+    }
+}
 type Identity = Key | object
 type Primitive = number | string | boolean | null
 type Sign = 1 | -1
@@ -22,6 +27,14 @@ interface CoordinateConfig {
 }
 
 namespace Coordinates {
+
+    export const defaultConfig: CoordinateConfig = {
+        originX: 0,
+        originY: 0,
+        axisX: 1,
+        axisY: 1
+    }
+    
     export function getOrientation(config: CoordinateConfig): Sign {
         return (config.axisX * config.axisY) as Sign
     }
@@ -108,10 +121,18 @@ namespace Identity {
 
     let entries: Dictionary<object | Primitive> = {}
 
-    function isValid(key: Key | null | undefined): boolean {
-        return key !== undefined && key !== null
+    function isValid(uid: UID | undefined): boolean {
+        return uid !== undefined && uid !== null
     }
 
+    export function getKey(id: Identity): UID {
+        if (Object.isObject(id)){
+            return (id as object & Entry).__UID
+        } else if (Key.isKey(id)){
+            return id as UID
+        }
+        return undefined
+    }
     function isRegistered(id: UID): boolean {
         return entries[id] !== undefined
     }

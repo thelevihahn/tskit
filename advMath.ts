@@ -8,20 +8,45 @@ interface Vector2 {
 
 
 namespace Vector2 {
+
+    let config: CoordinateConfig = Coordinates.defaultConfig
+
     interface Readonly {
         readonly x: number
         readonly y: number
     }
-    export const right: Readonly = { x: 1, y: 0 }
-    export const left: Readonly = { x: -1, y: 0 }
-    export const down: Readonly = { x: 0, y: 1 }
-    export const up: Readonly = { x: 0, y: -1 }
-    export const rightDown: Readonly = { x: 1, y: 1 }
-    export const rightUp: Readonly = { x: 1, y: -1 }
-    export const leftDown: Readonly = { x: -1, y: 1 }
-    export const leftUp: Readonly = { x: -1, y: -1 }
-    export const zero: Readonly = { x: 0, y: 0 }
+    
+    const _right: Vector2 = { x: config.axisX, y: 0 }
+    const _left: Vector2 = { x: -config.axisX, y: 0 }
+    const _up: Vector2 = { x: 0, y: config.axisY }
+    const _down: Vector2 = { x: 0, y: -config.axisY }
+    const _rightUp: Vector2 = { x: config.axisX, y: config.axisY }
+    const _rightDown: Vector2 = { x: config.axisX, y: -config.axisY }
+    const _leftUp: Vector2 = { x: -config.axisX, y: config.axisY }
+    const _leftDown: Vector2 = { x: -config.axisX, y: -config.axisY }
 
+    export function setConfig(coordConfig: CoordinateConfig){
+        config = coordConfig
+
+        mutateRaw(_right, config.axisX, 0)
+        mutateRaw(_left, -config.axisX, 0)
+        mutateRaw(_up, 0, config.axisY)
+        mutateRaw(_down, 0, -config.axisY)
+        mutateRaw(_rightUp, config.axisX, config.axisY)
+        mutateRaw(_rightDown, config.axisX, -config.axisY)
+        mutateRaw(_leftUp, -config.axisX, config.axisY)
+        mutateRaw(_leftDown, -config.axisX, -config.axisY)
+    }
+
+    export const zero: Readonly = { x: 0, y: 0 }
+    export const right: Readonly = _right
+    export const left: Readonly = _left
+    export const down: Readonly = _down
+    export const up: Readonly = _up
+    export const rightUp: Readonly = _rightUp
+    export const rightDown: Readonly = _rightDown
+    export const leftUp: Readonly = _leftUp
+    export const leftDown: Readonly = _leftDown
     export function create(x = 0, y = 0): Vector2 {
         return { x, y }
     }
@@ -30,10 +55,22 @@ namespace Vector2 {
         return { x: v.x, y: v.y }
     }
 
+    export function mutate(a: Vector2, b: Vector2) {
+        mutateRaw(a, b.x, b.y)
+    }
+    export function mutateRaw(v: Vector2, x: number, y: number) {
+        v.x = x
+        v.y = y
+    }
+    console.log(right.x + ", " + right.y)
+
+    mutateRaw(right as Vector2, 5, 10)
+
+    console.log(right.x + ", " + right.y)
     export function equals(a: Vector2, b: Vector2): boolean {
         return a.x === b.x && a.y === b.y
     }
-
+    
     export function equalsApprox(
         a: Vector2,
         b: Vector2,
@@ -94,8 +131,9 @@ namespace Vector2 {
     export function cross(
         a: Vector2,
         b: Vector2,
-        orientation: Sign = 1
+        orientation?: Sign
     ): number {
+        if(orientation === undefined) orientation = Coordinates.getOrientation(config)
         return crossRaw(a.x, a.y, b.x, b.y, orientation)
     }
     export function crossRaw(
@@ -103,8 +141,9 @@ namespace Vector2 {
         ay: number,
         bx: number,
         by: number,
-        orientation: Sign = 1
+        orientation?: Sign
     ): number {
+        if(orientation === undefined) orientation = Coordinates.getOrientation(config)
         return orientation * (ax * by - ay * bx)
     }
 
